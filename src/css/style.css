@@ -1,0 +1,75 @@
+:root {
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --primary: #2563eb;
+    --accent: #facc15;
+    --text: #1c1917;
+    --board-bg: #d6d3d1;
+    --error: #ef4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, html {
+    width: 100%; height: 100%; overflow: hidden;
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#app { display: flex; justify-content: center; align-items: center; width: 100vw; height: 100vh; }
+
+.card {
+    background: var(--card-bg);
+    width: 95vw; max-width: 1350px; height: 92vh;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    display: flex; flex-direction: column;
+    padding: 2.5rem; text-align: center; overflow-y: auto;
+}
+
+.instructions-text {
+    text-align: left; line-height: 1.6; color: #444;
+    margin: 20px auto; max-width: 900px; font-size: 1.1rem;
+}
+
+.corsi-grid {
+    position: relative; flex-grow: 1;
+    background: var(--board-bg); border-radius: 1rem;
+    margin: 1rem auto; width: 100%;
+    aspect-ratio: 16 / 9; max-height: 60vh; 
+    border: 4px solid #a8a29e; padding: 50px;
+}
+
+.block {
+    position: absolute; width: 85px; height: 65px;
+    background-color: var(--primary); border-radius: 6px;
+    cursor: pointer; transition: transform 0.1s, background-color 0.2s;
+    box-shadow: 0 4px 0px #1d4ed8; transform: translate(-50%, -50%);
+}
+
+.block.active, .block.selected {
+    background-color: var(--accent) !important;
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 0 25px var(--accent); z-index: 10;
+}
+
+@keyframes resetPulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { background-color: #60a5fa; transform: translate(-50%, -50%) scale(1.1); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+.reset-animation { animation: resetPulse 0.4s ease-out; }
+
+button {
+    padding: 15px 40px; font-size: 1.1rem; font-weight: bold;
+    border-radius: 12px; border: none; cursor: pointer;
+    background: var(--primary); color: white; transition: transform 0.1s;
+}
+button:active { transform: scale(0.95); }
+.btn-secondary { background: #78716c; }
+
+#status-msg { font-size: 1.8rem; font-weight: 800; color: var(--primary); min-height: 2.5rem; }
+
+.results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+.result-item { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
+.big-number { font-size: 2.5rem; font-weight: 900; color: var(--primary); display: block; }
