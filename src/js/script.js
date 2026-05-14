@@ -233,7 +233,7 @@ function renderResults() {
 }
 
 function downloadCSV() {
-    const header = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
+    const fields = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
     const rows = state.trials.map(t => [
         t.stage,
         t.span,
@@ -241,7 +241,9 @@ function downloadCSV() {
         `"${t.userAnswer.join(' ')}"`,
         t.isCorrect ? 'sim' : 'nao'
     ]);
-    const csv = [header, ...rows].map(row => row.join(',')).join('\n');
+    const headerRow = ['campo', ...rows.map((_, i) => i + 1)];
+    const fieldRows = fields.map((field, fi) => [field, ...rows.map(row => row[fi])]);
+    const csv = [headerRow, ...fieldRows].map(row => row.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
