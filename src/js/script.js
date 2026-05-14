@@ -26,6 +26,7 @@ let state = {
     userSelection: [],
     errorsInCurrentPair: 0,
     results: { ad: 0, ai: 0, sd: 0, si: 0 },
+    trials: [],
     canClick: false
 };
 
@@ -172,10 +173,18 @@ function resetSelection() {
 function checkSequence() {
     const sequences = state.isInverse ? INVERSE_SEQUENCES : DIRECT_SEQUENCES;
     const currentCorrectSeq = sequences[state.currentIndex];
-    
+
     // Compara a seleção do usuário com a sequência correta do array
     const isCorrect = JSON.stringify(state.userSelection) === JSON.stringify(currentCorrectSeq);
-    
+
+    state.trials.push({
+        stage: state.isInverse ? 'inversa' : 'direta',
+        span: currentCorrectSeq.length,
+        sequence: currentCorrectSeq.slice(),
+        userAnswer: state.userSelection.slice(),
+        isCorrect
+    });
+
     if (isCorrect) {
         if (state.isInverse) {
             state.results.ai++;
@@ -214,20 +223,34 @@ function checkSequence() {
 }
 
 function renderResults() {
-    const da = state.results.ad - state.results.ai;
-    const ds = state.results.sd - state.results.si;
     container.innerHTML = `
-        <h2>Resultados Finais</h2>
-        <div class="results-grid">
-            <div class="result-item"><span>Acertos Direto (AD)</span><strong class="big-number">${state.results.ad}</strong></div>
-            <div class="result-item"><span>Acertos Inverso (AI)</span><strong class="big-number">${state.results.ai}</strong></div>
-            <div class="result-item"><span>Span Direto (SD)</span><strong class="big-number">${state.results.sd}</strong></div>
-            <div class="result-item"><span>Span Inverso (SI)</span><strong class="big-number">${state.results.si}</strong></div>
-            <div class="result-item"><span>Diferença Acertos</span><strong class="big-number">${da}</strong></div>
-            <div class="result-item"><span>Diferença Span</span><strong class="big-number">${ds}</strong></div>
-        </div>
-        <button style="margin-top:30px" onclick="location.reload()">Reiniciar Teste</button>
+        <h2>Teste Concluído</h2>
+        <p style="margin:20px 0">Clique no botão abaixo para baixar o arquivo CSV com os resultados.</p>
+        <button onclick="downloadCSV()">Baixar Resultados (CSV)</button>
+        <br><br>
+        <button class="btn-secondary" onclick="location.reload()">Reiniciar Teste</button>
     `;
+}
+
+function downloadCSV() {
+    const header = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
+    const rows = state.trials.map(t => [
+        t.stage,
+        t.span,
+        `"${t.sequence.join(' ')}"`,
+        `"${t.userAnswer.join(' ')}"`,
+        t.isCorrect ? 'sim' : 'nao'
+    ]);
+    const csv = [header, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `resultados-span-visual-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 function playBeep(freq) {
