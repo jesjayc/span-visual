@@ -4,6 +4,15 @@ const SQUARE_POSITIONS = [
     { id: 7, x: 46, y: 77 }, { id: 8, x: 10, y: 86 }, { id: 9, x: 86, y: 84 }
 ];
 
+const TRIAL_DIRECT_SEQUENCES = [
+    [8, 3], [5, 9]
+];
+
+// Segue a mesma regra do comentário de INVERSE_SEQUENCES
+const TRIAL_INVERSE_SEQUENCES = [
+    [9, 4], [2, 5]
+];
+
 const DIRECT_SEQUENCES = [
     [3, 8], [5, 1], [6, 2, 9], [4, 7, 1], [1, 5, 4, 7], [8, 2, 3, 6],
     [9, 3, 1, 4, 8], [7, 2, 5, 1, 6], [2, 6, 8, 5, 9, 1], [4, 8, 3, 7, 1, 2],
@@ -21,6 +30,7 @@ const INVERSE_SEQUENCES = [
 
 let state = {
     stage: 'WELCOME',
+    isTrial: true,
     isInverse: false,
     currentIndex: 0,
     userSelection: [],
@@ -36,6 +46,7 @@ function render() {
     container.innerHTML = '';
     if (state.stage === 'WELCOME') renderWelcome();
     else if (state.stage === 'AUDIO_TEST') renderAudioTest();
+    else if (state.stage === 'TRIAL_RAPPORT') renderTrialRapport(); 
     else if (state.stage === 'RAPPORT') renderRapport();
     else if (state.stage === 'TESTING') renderTesting();
     else if (state.stage === 'RESULTS') renderResults();
@@ -55,19 +66,47 @@ function renderAudioTest() {
         <p style="margin:20px 0">Certifique-se de que o som está ligado.</p>
         <button onclick="playBeep(440)">Ouvir Som de Teste</button>
         <br><br>
-        <button class="btn-secondary" onclick="nextStage('RAPPORT')">O áudio está funcionando</button>
+        <button class="btn-secondary" onclick="nextStage('TRIAL_RAPPORT')">O áudio está funcionando</button>
     `;
+}
+
+function renderTrialRapport() {
+    if (!state.isInverse) {
+        container.innerHTML = `
+            <h2>Treino - Etapa Direta</h2>
+            <div class="instructions-text">
+                <p>Nesse teste você verá 9 quadrados azuis dispostos na tela. Ao iniciar o teste, alguns quadrados irão piscar na cor amarela, um de cada vez, em uma ordem.</p>
+                <p>Assim que a sequência terminar, você deverá selecionar os blocos que piscaram, clicando neles usando o seu mouse, na mesma ordem em que eles piscaram.</p>
+                <p>Quando terminar, clique no botão para seguir para a próxima sequência.</p>
+                <p>Se cometer um erro durante a seleção clique no botão “refazer” e tente novamente.</p>
+                <br>
+                <p><strong>Importante:</strong> A sequência será reproduzida uma única vez, e não pode ser vista novamente, por isso, preste muita atenção.</p>
+            </div>
+            <button onclick="nextStage('TESTING')">Começar Treino Direto</button>
+        `;
+    } else {
+        container.innerHTML = `
+            <h2>Treino - Etapa Inversa</h2>
+            <div class="instructions-text">
+                <p>Nessa próxima etapa de treino você vai ver novas sequências nos quadrados piscando, assim como na parte anterior.</p>
+                <p>No entanto, desta vez, sua tarefa será selecionar os quadrados na <strong>ordem inversa (de trás para frente)</strong> que eles piscaram.</p>
+                <p>Quando terminar de selecionar, clique no botão para seguir para a próxima sequência.</p>
+                <p>Se cometer um erro durante a seleção clique no botão “refazer” e tente novamente.</p>
+            </div>
+            <button onclick="nextStage('TESTING')">Começar Treino Inverso</button>
+        `;
+    }
 }
 
 function renderRapport() {
     if (!state.isInverse) {
         container.innerHTML = `
-            <h2>Rapport - Etapa direta</h2>
+            <h2>Teste - Etapa Direta</h2>
             <div class="instructions-text">
                 <p>Nesse teste você verá 9 quadrados azuis dispostos na tela. Ao iniciar o teste, alguns dos quadrados irão piscar na cor amarela, um de cada vez, em uma ordem.</p>
                 <p>Assim que a sequência terminar, você deverá selecionar os blocos que piscaram, clicando neles usando o seu mouse, na mesma ordem em que eles piscaram.</p>
                 <p>Quando terminar, clique no botão para seguir para a próxima sequência.</p>
-                <p>Se cometer um erro durante a digitação clique no botão “refazer” e digite novamente a sequência.</p>
+                <p>Se cometer um erro durante a seleção clique no botão “refazer” e digite novamente a sequência.</p>
                 <br>
                 <p><strong>Importante:</strong> A sequência será reproduzida uma única vez, e não pode ser vista novamente, por isso, preste muita atenção.</p>
             </div>
@@ -75,12 +114,12 @@ function renderRapport() {
         `;
     } else {
         container.innerHTML = `
-            <h2>Etapa inversa</h2>
+            <h2>Teste - Etapa Inversa</h2>
             <div class="instructions-text">
                 <p>Nessa próxima etapa você vai ver novas sequências nos quadrados piscando, assim como na parte anterior.</p>
                 <p>No entanto, desta vez, sua tarefa será selecionar os quadrados na <strong>ordem inversa (de trás para frente)</strong> que eles piscaram.</p>
                 <p>Quando terminar de selecionar, clique no botão para seguir para a próxima sequência.</p>
-                <p>Se cometer um erro durante a digitação clique no botão “refazer” e digite novamente a sequência.</p>
+                <p>Se cometer um erro durante a seleção clique no botão “refazer” e digite novamente a sequência.</p>
             </div>
             <button onclick="nextStage('TESTING')">Começar Etapa Inversa</button>
         `;
@@ -111,7 +150,15 @@ function renderTesting() {
 
 async function startSequence() {
     state.canClick = false;
-    const sequences = state.isInverse ? INVERSE_SEQUENCES : DIRECT_SEQUENCES;
+
+    // 4 possibilidades -> treino direto ou inverso, e teste direto ou inverso.
+    let sequences;
+    if (state.isTrial) {
+        sequences = state.isInverse ? TRIAL_INVERSE_SEQUENCES : TRIAL_DIRECT_SEQUENCES;
+    } else {
+        sequences = state.isInverse ? INVERSE_SEQUENCES : DIRECT_SEQUENCES;
+    }
+
     let sequenceToShow = sequences[state.currentIndex];
 
     // LÓGICA DA ETAPA INVERSA:
@@ -171,42 +218,96 @@ function resetSelection() {
 }
 
 function checkSequence() {
-    const sequences = state.isInverse ? INVERSE_SEQUENCES : DIRECT_SEQUENCES;
+    // 4 possibilidades (treino ou teste) -> checa em qual se está
+    let sequences;
+    if (state.isTrial) {
+        sequences = state.isInverse ? TRIAL_INVERSE_SEQUENCES : TRIAL_DIRECT_SEQUENCES;
+    } else {
+        sequences = state.isInverse ? INVERSE_SEQUENCES : DIRECT_SEQUENCES;
+    }
+
     const currentCorrectSeq = sequences[state.currentIndex];
 
     // Compara a seleção do usuário com a sequência correta do array
     const isCorrect = JSON.stringify(state.userSelection) === JSON.stringify(currentCorrectSeq);
 
-    state.trials.push({
-        stage: state.isInverse ? 'inversa' : 'direta',
-        span: currentCorrectSeq.length,
-        sequence: currentCorrectSeq.slice(),
-        userAnswer: state.userSelection.slice(),
-        isCorrect
-    });
+    // Condicionar para prender no trial até acertar (entender o teste)
+    if (state.isTrial) {
+        if (!isCorrect) {
+            // Erro durante o trial: aviso do erro, limpa a tela e não deixa avançar
+            const statusMsg = document.getElementById('status-msg');
+            statusMsg.innerText = "Incorreto! Tente a sequência novamente.";
+            statusMsg.style.color = "var(--error)";
+            playBeep(330);
 
-    if (isCorrect) {
-        if (state.isInverse) {
-            state.results.ai++;
-            state.results.si = Math.max(state.results.si, currentCorrectSeq.length);
-        } else {
-            state.results.ad++;
-            state.results.sd = Math.max(state.results.sd, currentCorrectSeq.length);
+            setTimeout(() => {
+                statusMsg.innerText = "Sua vez!";
+                statusMsg.style.color = "var(--primary)";
+            }, 2000);
+
+            // Limpa a seleção visual do usuário e no array para a nova tentativa
+            state.userSelection = [];
+            document.querySelectorAll('.block').forEach(b => b.classList.remove('selected'));
+
+            // Return para evitar de somar +1 no currentIndex
+            return;
         }
-        state.errorsInCurrentPair = 0;
-    } else {
-        state.errorsInCurrentPair++;
+    }
+    // Fim da condicional para a "prisão" no trial e início da condicional para o teste
+    else {
+        state.trials.push({
+            stage: state.isInverse ? 'inversa' : 'direta',
+            span: currentCorrectSeq.length,
+            sequence: currentCorrectSeq.slice(),
+            userAnswer: state.userSelection.slice(),
+            isCorrect
+        });
+
+        if (isCorrect) {
+            if (state.isInverse) {
+                state.results.ai++;
+                state.results.si = Math.max(state.results.si, currentCorrectSeq.length);
+            } else {
+                state.results.ad++;
+                state.results.sd = Math.max(state.results.sd, currentCorrectSeq.length);
+            }
+            state.errorsInCurrentPair = 0;
+        } else {
+            state.errorsInCurrentPair++;
+        }
     }
 
+    // Só chega aqui se acertou o trial ou se está no teste
     const nextIndex = state.currentIndex + 1;
     const pairFinished = nextIndex % 2 === 0;
-    
-    // Critério de interrupção: 2 erros no mesmo par
-    const shouldStop = (pairFinished && state.errorsInCurrentPair >= 2) || nextIndex >= sequences.length;
 
+    let shouldStop = false;
+
+    if (state.isTrial) {
+        // No trial, a fase só interrompe quando a lista de 2 itens acabar
+        shouldStop = nextIndex >= sequences.length;
+    } else {
+        // No teste, a fase só interrompe quando o usuário errar 2 vezes no par ou se a lista acabar
+        shouldStop = (pairFinished && state.errorsInCurrentPair >= 2) || nextIndex >= sequences.length;
+    }
+
+    // Fluxo de Telas
     if (shouldStop) {
-        if (!state.isInverse) {
+        if (state.isTrial && !state.isInverse) {
+            state.isTrial = false;
+            state.currentIndex = 0;
+            state.errorsInCurrentPair = 0;
+            state.stage = 'RAPPORT';
+            render();
+        } else if (!state.isTrial && !state.isInverse) {
+            state.isTrial = true;
             state.isInverse = true;
+            state.currentIndex = 0;
+            state.errorsInCurrentPair = 0;
+            state.stage = 'TRIAL_RAPPORT';
+            render();
+        } else if (state.isTrial && state.isInverse) {
+            state.isTrial = false;
             state.currentIndex = 0;
             state.errorsInCurrentPair = 0;
             state.stage = 'RAPPORT';
