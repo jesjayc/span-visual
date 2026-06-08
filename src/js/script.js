@@ -4,6 +4,7 @@ const SQUARE_POSITIONS = [
     { id: 7, x: 46, y: 77 }, { id: 8, x: 10, y: 86 }, { id: 9, x: 86, y: 84 }
 ];
 
+// Sequência de Trials
 const TRIAL_DIRECT_SEQUENCES = [
     [8, 3], [5, 9]
 ];
@@ -148,6 +149,7 @@ function renderTesting() {
     startSequence();
 }
 
+// Adicionado "delayTime" com valor padrão de 1.2s
 async function startSequence() {
     state.canClick = false;
 
@@ -236,18 +238,24 @@ function checkSequence() {
         if (!isCorrect) {
             // Erro durante o trial: aviso do erro, limpa a tela e não deixa avançar
             const statusMsg = document.getElementById('status-msg');
-            statusMsg.innerText = "Incorreto! Tente a sequência novamente.";
+            statusMsg.innerText = "Incorreto! Observe a sequência novamente.";
             statusMsg.style.color = "var(--error)";
             playBeep(330);
 
-            setTimeout(() => {
-                statusMsg.innerText = "Sua vez!";
-                statusMsg.style.color = "var(--primary)";
-            }, 2000);
+            // Esconde os botóes para o usuário não clicar enquanto os quadrados reacendem
+            document.getElementById('controls').style.visibility = 'hidden';
 
-            // Limpa a seleção visual do usuário e no array para a nova tentativa
-            state.userSelection = [];
-            document.querySelectorAll('.block').forEach(b => b.classList.remove('selected'));
+            setTimeout(() => {
+                statusMsg.style.color = "var(--primary)";
+                statusMsg.innerText = "Prepare-se...";
+
+                // Limpa a seleção visual do usuário e no array para a nova tentativa
+                state.userSelection = [];
+                document.querySelectorAll('.block').forEach(b => b.classList.remove('selected'));
+
+                // Chama novamente a função de brilhar (mesma sequência porque currentindex não somou 1)
+                startSequence();
+            }, 2000);
 
             // Return para evitar de somar +1 no currentIndex
             return;
