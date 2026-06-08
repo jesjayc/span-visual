@@ -149,7 +149,6 @@ function renderTesting() {
     startSequence();
 }
 
-// Adicionado "delayTime" com valor padrão de 1.2s
 async function startSequence() {
     state.canClick = false;
 
