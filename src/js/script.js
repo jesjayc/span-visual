@@ -46,7 +46,6 @@ const container = document.getElementById('screen-container');
 function render() {
     container.innerHTML = '';
     if (state.stage === 'WELCOME') renderWelcome();
-    else if (state.stage === 'AUDIO_TEST') renderAudioTest();
     else if (state.stage === 'TRIAL_RAPPORT') renderTrialRapport(); 
     else if (state.stage === 'RAPPORT') renderRapport();
     else if (state.stage === 'TESTING') renderTesting();
@@ -57,17 +56,7 @@ function renderWelcome() {
     container.innerHTML = `
         <h1>Span Visuoespacial</h1>
         <p style="margin:20px 0">Avaliação neuropsicológica de memória operacional visuoespacial e atenção concentrada.</p>
-        <button onclick="nextStage('AUDIO_TEST')">Iniciar Aplicativo</button>
-    `;
-}
-
-function renderAudioTest() {
-    container.innerHTML = `
-        <h2>Teste de Áudio</h2>
-        <p style="margin:20px 0">Certifique-se de que o som está ligado.</p>
-        <button onclick="playBeep(440)">Ouvir Som de Teste</button>
-        <br><br>
-        <button class="btn-secondary" onclick="nextStage('TRIAL_RAPPORT')">O áudio está funcionando</button>
+        <button onclick="nextStage('TRIAL_RAPPORT')">Iniciar Aplicativo</button>
     `;
 }
 
