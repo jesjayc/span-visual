@@ -1,35 +1,56 @@
 :root {
-    --bg-color: #f3f4f6;
-    --card-bg: #ffffff;
-    --primary: #2563eb;
-    --accent: #facc15;
-    --text: #1c1917;
-    --board-bg: #d6d3d1;
+    /* Paleta unificada da bateria de testes */
+    --slate-900: #0f172a;
+    --card: #1e293b;
+    --text: #f8fafc;
+    --text-dim: #94a3b8;
+    --primary: #3b82f6; /* Azul original das caixas mantido como primário do teste */
+    --cyan: #22d3ee;
+    --amber: #fbbf24;
     --error: #ef4444;
+    --border: #334155;
+    --board-bg: #0f172a; /* Fundo do tabuleiro agora acompanha o tema escuro */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body, html {
     width: 100%; height: 100%; overflow: hidden;
-    background-color: var(--bg-color);
+    background-color: var(--slate-900); /* Fundo escuro padrão */
+    color: var(--text);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #app { display: flex; justify-content: center; align-items: center; width: 100vw; height: 100vh; }
 
+/* Classe screen-container padronizada */
 .card {
-    background: var(--card-bg);
+    background: var(--card);
     width: 95vw; max-width: 1350px; height: 92vh;
     border-radius: 1.5rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); /* Sombra ajustada para tema escuro */
     display: flex; flex-direction: column;
     padding: 2.5rem; text-align: center; overflow-y: auto;
+    border: 1px solid var(--border);
+}
+
+/* Título em ciano padrão */
+.title {
+    color: var(--cyan);
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .instructions-text {
-    text-align: left; line-height: 1.6; color: #444;
+    text-align: center; line-height: 1.6; color: var(--text);
     margin: 20px auto; max-width: 900px; font-size: 1.1rem;
+}
+
+.instructions-text p {
+    margin-bottom: 10px;
 }
 
 .corsi-grid {
@@ -37,7 +58,7 @@ body, html {
     background: var(--board-bg); border-radius: 1rem;
     margin: 1rem auto; width: 100%;
     aspect-ratio: 16 / 9; max-height: 60vh; 
-    border: 4px solid #a8a29e; padding: 50px;
+    border: 2px solid var(--border); padding: 50px;
 }
 
 .block {
@@ -48,9 +69,9 @@ body, html {
 }
 
 .block.active, .block.selected {
-    background-color: var(--accent) !important;
+    background-color: var(--amber) !important;
     transform: translate(-50%, -50%) scale(1.1);
-    box-shadow: 0 0 25px var(--accent); z-index: 10;
+    box-shadow: 0 0 25px var(--amber); z-index: 10;
 }
 
 @keyframes resetPulse {
@@ -63,13 +84,20 @@ body, html {
 button {
     padding: 15px 40px; font-size: 1.1rem; font-weight: bold;
     border-radius: 12px; border: none; cursor: pointer;
-    background: var(--primary); color: white; transition: transform 0.1s;
+    background: var(--cyan); /* Botão agora usa o ciano do padrão */
+    color: #000; /* Texto do botão preto para contraste no ciano */
+    transition: transform 0.1s;
+    margin-top: 15px;
+}
+button:hover {
+    background: #06b6d4;
 }
 button:active { transform: scale(0.95); }
-.btn-secondary { background: #78716c; }
+.btn-secondary { background: var(--border); color: var(--text); }
+.btn-secondary:hover { background: #475569; }
 
-#status-msg { font-size: 1.8rem; font-weight: 800; color: var(--primary); min-height: 2.5rem; }
+#status-msg { font-size: 1.8rem; font-weight: 800; color: var(--cyan); min-height: 2.5rem; margin-bottom: 10px; }
 
 .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-.result-item { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
-.big-number { font-size: 2.5rem; font-weight: 900; color: var(--primary); display: block; }
+.result-item { background: var(--slate-900); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
+.big-number { font-size: 2.5rem; font-weight: 900; color: var(--cyan); display: block; }
