@@ -30,7 +30,7 @@ const INVERSE_SEQUENCES = [
 ];
 
 let state = {
-    stage: 'WELCOME',
+    stage: 'TRIAL_RAPPORT',
     isTrial: true,
     isInverse: false,
     currentIndex: 0,
@@ -54,7 +54,7 @@ function render() {
 
 function renderWelcome() {
     container.innerHTML = `
-        <h1>Span Visuoespacial</h1>
+        <h1 class="title">Span Visuoespacial</h1>
         <p style="margin:20px 0">Avaliação neuropsicológica de memória operacional visuoespacial e atenção concentrada.</p>
         <button onclick="nextStage('TRIAL_RAPPORT')">Iniciar Aplicativo</button>
     `;
@@ -63,25 +63,31 @@ function renderWelcome() {
 function renderTrialRapport() {
     if (!state.isInverse) {
         container.innerHTML = `
-            <h2>Treino - Etapa Direta</h2>
+            <h2 class="title">Treino - Etapa Direta</h2>
             <div class="instructions-text">
                 <p>Nesse teste você verá 9 quadrados azuis dispostos na tela. Ao iniciar o teste, alguns quadrados irão piscar na cor amarela, um de cada vez, em uma ordem.</p>
                 <p>Assim que a sequência terminar, você deverá selecionar os blocos que piscaram, clicando neles usando o seu mouse, na mesma ordem em que eles piscaram.</p>
                 <p>Quando terminar, clique no botão para seguir para a próxima sequência.</p>
                 <p>Se cometer um erro durante a seleção clique no botão “refazer” e tente novamente.</p>
-                <br>
-                <p><strong>Importante:</strong> A sequência será reproduzida uma única vez, e não pode ser vista novamente, por isso, preste muita atenção.</p>
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <h3 style="color: var(--cyan); text-align: center; margin-bottom: 15px; font-size: 1.2rem;">⚠️ IMPORTANTE</h3>
+                    <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
+                </div>
             </div>
             <button onclick="nextStage('TESTING')">Começar Treino Direto</button>
         `;
     } else {
         container.innerHTML = `
-            <h2>Treino - Etapa Inversa</h2>
+            <h2 class="title">Treino - Etapa Inversa</h2>
             <div class="instructions-text">
                 <p>Nessa próxima etapa de treino você vai ver novas sequências nos quadrados piscando, assim como na parte anterior.</p>
                 <p>No entanto, desta vez, sua tarefa será selecionar os quadrados na <strong>ordem inversa (de trás para frente)</strong> que eles piscaram.</p>
                 <p>Quando terminar de selecionar, clique no botão para seguir para a próxima sequência.</p>
                 <p>Se cometer um erro durante a seleção clique no botão “refazer” e tente novamente.</p>
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <h3 style="color: var(--cyan); text-align: center; margin-bottom: 15px; font-size: 1.2rem;">⚠️ IMPORTANTE</h3>
+                    <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
+                </div>
             </div>
             <button onclick="nextStage('TESTING')">Começar Treino Inverso</button>
         `;
@@ -91,25 +97,31 @@ function renderTrialRapport() {
 function renderRapport() {
     if (!state.isInverse) {
         container.innerHTML = `
-            <h2>Teste - Etapa Direta</h2>
+            <h2 class="title">Teste - Etapa Direta</h2>
             <div class="instructions-text">
                 <p>Nesse teste você verá 9 quadrados azuis dispostos na tela. Ao iniciar o teste, alguns dos quadrados irão piscar na cor amarela, um de cada vez, em uma ordem.</p>
                 <p>Assim que a sequência terminar, você deverá selecionar os blocos que piscaram, clicando neles usando o seu mouse, na mesma ordem em que eles piscaram.</p>
                 <p>Quando terminar, clique no botão para seguir para a próxima sequência.</p>
                 <p>Se cometer um erro durante a seleção clique no botão “refazer” e digite novamente a sequência.</p>
-                <br>
-                <p><strong>Importante:</strong> A sequência será reproduzida uma única vez, e não pode ser vista novamente, por isso, preste muita atenção.</p>
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <h3 style="color: var(--cyan); text-align: center; margin-bottom: 15px; font-size: 1.2rem;">⚠️ IMPORTANTE</h3>
+                    <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
+                </div>
             </div>
             <button onclick="nextStage('TESTING')">Começar Etapa Direta</button>
         `;
     } else {
         container.innerHTML = `
-            <h2>Teste - Etapa Inversa</h2>
+            <h2 class="title">Teste - Etapa Inversa</h2>
             <div class="instructions-text">
                 <p>Nessa próxima etapa você vai ver novas sequências nos quadrados piscando, assim como na parte anterior.</p>
                 <p>No entanto, desta vez, sua tarefa será selecionar os quadrados na <strong>ordem inversa (de trás para frente)</strong> que eles piscaram.</p>
                 <p>Quando terminar de selecionar, clique no botão para seguir para a próxima sequência.</p>
                 <p>Se cometer um erro durante a seleção clique no botão “refazer” e digite novamente a sequência.</p>
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <h3 style="color: var(--cyan); text-align: center; margin-bottom: 15px; font-size: 1.2rem;">⚠️ IMPORTANTE</h3>
+                    <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
+                </div>
             </div>
             <button onclick="nextStage('TESTING')">Começar Etapa Inversa</button>
         `;
@@ -203,7 +215,7 @@ function resetSelection() {
     playBeep(330);
     setTimeout(() => {
         statusMsg.innerText = "Sua vez!";
-        statusMsg.style.color = "var(--primary)";
+        statusMsg.style.color = "var(--cyan)";
     }, 1000);
 }
 
@@ -234,7 +246,7 @@ function checkSequence() {
             document.getElementById('controls').style.visibility = 'hidden';
 
             setTimeout(() => {
-                statusMsg.style.color = "var(--primary)";
+                statusMsg.style.color = "var(--cyan)";
                 statusMsg.innerText = "Prepare-se...";
 
                 // Limpa a seleção visual do usuário e no array para a nova tentativa
@@ -321,7 +333,7 @@ function checkSequence() {
 
 function renderResults() {
     container.innerHTML = `
-        <h2>Teste Concluído</h2>
+        <h2 class="title">Teste Concluído</h2>
         <p style="margin:20px 0">Clique no botão abaixo para baixar o arquivo CSV com os resultados.</p>
         <button onclick="downloadCSV()">Baixar Resultados (CSV)</button>
         <br><br>
