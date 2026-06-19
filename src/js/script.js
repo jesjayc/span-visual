@@ -30,7 +30,7 @@ const INVERSE_SEQUENCES = [
 ];
 
 let state = {
-    stage: 'TRIAL_RAPPORT',
+    stage: 'TRIAL_RAPPORT', // Começando já na tela de treino da etapa direta
     isTrial: true,
     isInverse: false,
     currentIndex: 0,
@@ -279,8 +279,9 @@ function checkSequence() {
                 state.results.ad++;
                 state.results.sd = Math.max(state.results.sd, currentCorrectSeq.length);
             }
-            state.errorsInCurrentPair = 0;
-        } else {
+        } 
+        
+        if (!isCorrect) {
             state.errorsInCurrentPair++;
         }
     }
@@ -301,6 +302,9 @@ function checkSequence() {
 
     // Fluxo de Telas
     if (shouldStop) {
+
+        state.userSelection = []; // limpando cliques residuais para não afetar a próxima fase? memória estava guardando os cliques da fase de treino
+
         if (state.isTrial && !state.isInverse) {
             state.isTrial = false;
             state.currentIndex = 0;
@@ -325,6 +329,10 @@ function checkSequence() {
             render();
         }
     } else {
+        if (pairFinished && !state.isTrial) {
+            state.errorsInCurrentPair = 0;
+        }
+
         state.currentIndex = nextIndex;
         state.userSelection = [];
         renderTesting();
