@@ -4,16 +4,8 @@ const SQUARE_POSITIONS = [
     { id: 7, x: 46, y: 77 }, { id: 8, x: 10, y: 86 }, { id: 9, x: 86, y: 84 }
 ];
 
-// Sequência de Trials
-const TRIAL_DIRECT_SEQUENCES = [
-    [8, 3], [5, 9]
-];
-
-// Segue a mesma regra do comentário de INVERSE_SEQUENCES
-const TRIAL_INVERSE_SEQUENCES = [
-    [9, 4], [2, 5]
-];
-
+const TRIAL_DIRECT_SEQUENCES = [[8, 3], [5, 9]];
+const TRIAL_INVERSE_SEQUENCES = [[9, 4], [2, 5]];
 const DIRECT_SEQUENCES = [
     [3, 8], [5, 1], [6, 2, 9], [4, 7, 1], [1, 5, 4, 7], [8, 2, 3, 6],
     [9, 3, 1, 4, 8], [7, 2, 5, 1, 6], [2, 6, 8, 5, 9, 1], [4, 8, 3, 7, 1, 2],
@@ -21,7 +13,6 @@ const DIRECT_SEQUENCES = [
     [3, 9, 8, 2, 4, 6, 7, 1], [7, 1, 5, 6, 3, 8, 2, 9, 4], [6, 2, 9, 4, 1, 7, 8, 5, 3]
 ];
 
-// Estes arrays já são a RESPOSTA CORRETA (o inverso da exibição)
 const INVERSE_SEQUENCES = [
     [5, 2], [9, 1], [7, 2, 3], [1, 4, 8], [8, 5, 2, 9], [4, 7, 3, 1],
     [6, 3, 8, 2, 7], [5, 1, 9, 4, 6], [1, 5, 8, 6, 2, 4], [9, 3, 7, 4, 8, 2],
@@ -30,7 +21,8 @@ const INVERSE_SEQUENCES = [
 ];
 
 let state = {
-    stage: 'TRIAL_RAPPORT', // Começando já na tela de treino da etapa direta
+    stage: 'NAME_SCREEN', // Inicia pela tela de nome
+    participantId: '',
     isTrial: true,
     isInverse: false,
     currentIndex: 0,
@@ -45,17 +37,53 @@ const container = document.getElementById('screen-container');
 
 function render() {
     container.innerHTML = '';
-    if (state.stage === 'WELCOME') renderWelcome();
+    if (state.stage === 'NAME_SCREEN') renderNameScreen();
+    else if (state.stage === 'WELCOME') renderWelcome();
     else if (state.stage === 'TRIAL_RAPPORT') renderTrialRapport(); 
     else if (state.stage === 'RAPPORT') renderRapport();
     else if (state.stage === 'TESTING') renderTesting();
     else if (state.stage === 'RESULTS') renderResults();
 }
 
+function renderNameScreen() {
+    container.innerHTML = `
+        <h1 class="title" style="margin-bottom: 0;">Bem-vindo(a) ao Experimento</h1>
+        <h2 class="title" style="color: var(--text); font-size: 1.8rem; margin-top: 10px;">Span Visuoespacial</h2>
+        <p style="margin-bottom: 2rem; font-size: 1.1rem; color: var(--text-dim);">Para começar, por favor, digite seu ID ou nome.</p>
+        
+        <input type="text" id="participant-name-input" class="input-name" placeholder="Digite seu nome ou ID..." autocomplete="off">
+        
+        <div style="display: flex; justify-content: center; width: 100%;">
+            <button id="submit-name-button" class="btn-main">AVANÇAR PARA INSTRUÇÕES</button>
+        </div>
+    `;
+    
+    const input = document.getElementById('participant-name-input');
+    const btn = document.getElementById('submit-name-button');
+    
+    input.focus();
+    
+    const submitName = () => {
+        let val = input.value.trim();
+        if (!val) {
+            alert("Por favor, digite seu nome ou ID para começar o teste.");
+            input.focus();
+            return;
+        }
+        state.participantId = val;
+        nextStage('WELCOME');
+    };
+    
+    btn.onclick = submitName;
+    input.onkeypress = (e) => { 
+        if (e.key === 'Enter') submitName(); 
+    };
+}
+
 function renderWelcome() {
     container.innerHTML = `
         <h1 class="title">Span Visuoespacial</h1>
-        <p style="margin:20px 0">Avaliação neuropsicológica de memória operacional visuoespacial e atenção concentrada.</p>
+        <p style="margin:20px 0; color: var(--text-dim); font-size: 1.1rem;">Avaliação neuropsicológica de memória operacional visuoespacial e atenção concentrada.</p>
         <button onclick="nextStage('TRIAL_RAPPORT')">Iniciar Aplicativo</button>
     `;
 }
@@ -68,7 +96,7 @@ function renderTrialRapport() {
                 <p>Nesse teste você verá 9 quadrados azuis dispostos na tela. Ao iniciar o teste, alguns quadrados irão piscar na cor amarela, um de cada vez, em uma ordem.</p>
                 <p>Assim que a sequência terminar, você deverá selecionar os blocos que piscaram, clicando neles usando o seu mouse, na mesma ordem em que eles piscaram.</p>
                 <p>Quando terminar, clique no botão para seguir para a próxima sequência.</p>
-                <p>Se cometer um erro durante a seleção clique no botão “refazer” e tente novamente.</p>
+                <p>Se cometer um erro durante a seleção clique no botão "refazer" e tente novamente.</p>
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
                     <h3 style="color: var(--cyan); text-align: center; margin-bottom: 15px; font-size: 1.2rem;">⚠️ IMPORTANTE</h3>
                     <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
@@ -83,7 +111,7 @@ function renderTrialRapport() {
                 <p>Nessa próxima etapa de treino você vai ver novas sequências nos quadrados piscando, assim como na parte anterior.</p>
                 <p>No entanto, desta vez, sua tarefa será selecionar os quadrados na <strong>ordem inversa (de trás para frente)</strong> que eles piscaram.</p>
                 <p>Quando terminar de selecionar, clique no botão para seguir para a próxima sequência.</p>
-                <p>Se cometer um erro durante a seleção clique no botão “refazer” e tente novamente.</p>
+                <p>Se cometer um erro durante a seleção clique no botão "refazer" e tente novamente.</p>
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
                     <h3 style="color: var(--cyan); text-align: center; margin-bottom: 15px; font-size: 1.2rem;">⚠️ IMPORTANTE</h3>
                     <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
@@ -128,7 +156,7 @@ function renderTesting() {
     container.innerHTML = `
         <h2 id="status-msg">Prepare-se...</h2>
         <div class="corsi-grid" id="grid"></div>
-        <div class="ui-layer" id="controls" style="visibility:hidden">
+        <div class="ui-layer" id="controls" style="visibility:hidden; display: flex; gap: 15px; justify-content: center;">
             <button class="btn-secondary" onclick="resetSelection()">Refazer</button>
             <button onclick="checkSequence()">Próximo</button>
         </div>
@@ -149,7 +177,6 @@ function renderTesting() {
 async function startSequence() {
     state.canClick = false;
 
-    // 4 possibilidades -> treino direto ou inverso, e teste direto ou inverso.
     let sequences;
     if (state.isTrial) {
         sequences = state.isInverse ? TRIAL_INVERSE_SEQUENCES : TRIAL_DIRECT_SEQUENCES;
@@ -159,9 +186,6 @@ async function startSequence() {
 
     let sequenceToShow = sequences[state.currentIndex];
 
-    // LÓGICA DA ETAPA INVERSA:
-    // Se estivermos na etapa inversa, o array INVERSE_SEQUENCES já é a resposta.
-    // Portanto, para mostrar ao usuário, temos que inverter para que ele desinverta ao clicar.
     if (state.isInverse) {
         sequenceToShow = [...sequenceToShow].reverse();
     }
@@ -194,7 +218,6 @@ function handleBlockClick(id) {
     const el = document.getElementById(`block-${id}`);
     el.classList.add('selected');
     playBeep(550);
-    // O bloco fica aceso até o próximo clique ou tempo máximo
     setTimeout(() => el.classList.remove('selected'), 600);
 }
 
@@ -216,7 +239,6 @@ function resetSelection() {
 }
 
 function checkSequence() {
-    // 4 possibilidades (treino ou teste) -> checa em qual se está
     let sequences;
     if (state.isTrial) {
         sequences = state.isInverse ? TRIAL_INVERSE_SEQUENCES : TRIAL_DIRECT_SEQUENCES;
@@ -225,39 +247,26 @@ function checkSequence() {
     }
 
     const currentCorrectSeq = sequences[state.currentIndex];
-
-    // Compara a seleção do usuário com a sequência correta do array
     const isCorrect = JSON.stringify(state.userSelection) === JSON.stringify(currentCorrectSeq);
 
-    // Condicionar para prender no trial até acertar (entender o teste)
     if (state.isTrial) {
         if (!isCorrect) {
-            // Erro durante o trial: aviso do erro, limpa a tela e não deixa avançar
             const statusMsg = document.getElementById('status-msg');
             statusMsg.innerText = "Incorreto! Observe a sequência novamente.";
             statusMsg.style.color = "var(--error)";
             playBeep(330);
-
-            // Esconde os botóes para o usuário não clicar enquanto os quadrados reacendem
             document.getElementById('controls').style.visibility = 'hidden';
 
             setTimeout(() => {
                 statusMsg.style.color = "var(--cyan)";
                 statusMsg.innerText = "Prepare-se...";
-
-                // Limpa a seleção visual do usuário e no array para a nova tentativa
                 state.userSelection = [];
                 document.querySelectorAll('.block').forEach(b => b.classList.remove('selected'));
-
-                // Chama novamente a função de brilhar (mesma sequência porque currentindex não somou 1)
                 startSequence();
             }, 2000);
-
-            // Return para evitar de somar +1 no currentIndex
             return;
         }
     }
-    // Fim da condicional para a "prisão" no trial e início da condicional para o teste
     else {
         state.trials.push({
             stage: state.isInverse ? 'inversa' : 'direta',
@@ -282,25 +291,18 @@ function checkSequence() {
         }
     }
 
-    // Só chega aqui se acertou o trial ou se está no teste
     const nextIndex = state.currentIndex + 1;
     const pairFinished = nextIndex % 2 === 0;
-
     let shouldStop = false;
 
     if (state.isTrial) {
-        // No trial, a fase só interrompe quando a lista de 2 itens acabar
         shouldStop = nextIndex >= sequences.length;
     } else {
-        // No teste, a fase só interrompe quando o usuário errar 2 vezes no par ou se a lista acabar
         shouldStop = (pairFinished && state.errorsInCurrentPair >= 2) || nextIndex >= sequences.length;
     }
 
-    // Fluxo de Telas
     if (shouldStop) {
-
-        state.userSelection = []; // limpando cliques residuais para não afetar a próxima fase? memória estava guardando os cliques da fase de treino
-
+        state.userSelection = []; 
         if (state.isTrial && !state.isInverse) {
             state.isTrial = false;
             state.currentIndex = 0;
@@ -328,24 +330,32 @@ function checkSequence() {
         if (pairFinished && !state.isTrial) {
             state.errorsInCurrentPair = 0;
         }
-
         state.currentIndex = nextIndex;
         state.userSelection = [];
         renderTesting();
     }
 }
 
+// --- TELA DE RESULTADOS COM ENVIO AUTOMÁTICO ---
 function renderResults() {
     container.innerHTML = `
-        <h2 class="title">Teste Concluído</h2>
-        <p style="margin:20px 0">Clique no botão abaixo para baixar o arquivo CSV com os resultados.</p>
-        <button onclick="downloadCSV()">Baixar Resultados (CSV)</button>
-        <br><br>
-        <button class="btn-secondary" onclick="location.reload()">Reiniciar Teste</button>
+        <h1 class="title" style="font-size: 2.25rem;">Você finalizou o teste!</h1>
+        <p id="email-status-text" style="margin-bottom: 2.5rem; font-weight: 600; color: var(--text-dim); font-size: 1.1rem;">⏳ Processando resultados...</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px; margin: 0 auto;">
+            <button class="btn-secondary" onclick="copyToClipboard()" style="margin: 0; width: 100%;">COPIAR DADOS BRUTOS (BKP)</button>
+            <button class="btn-secondary" style="margin: 0; width: 100%; background: var(--border);" onclick="location.reload()">SAIR</button>
+        </div>
     `;
+    
+    sendResultsByEmail();
 }
 
-function downloadCSV() {
+async function sendResultsByEmail() {
+    const statusText = document.getElementById('email-status-text');
+    if(!statusText) return;
+    statusText.textContent = '⏳ Enviando resultados para o servidor...';
+    
     const fields = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
     const rows = state.trials.map(t => [
         t.stage,
@@ -354,18 +364,50 @@ function downloadCSV() {
         `"${t.userAnswer.join(' ')}"`,
         t.isCorrect ? 'sim' : 'nao'
     ]);
-    const headerRow = ['campo', ...rows.map((_, i) => i + 1)];
-    const fieldRows = fields.map((field, fi) => [field, ...rows.map(row => row[fi])]);
-    const csv = [headerRow, ...fieldRows].map(row => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `resultados-span-visual-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const headerRow = fields.join(';');
+    const csvContent = [headerRow, ...rows.map(r => r.join(';'))].join('\n');
+
+    try {
+        const response = await fetch('/api/enviar', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                dadosCSV: csvContent,
+                participante: state.participantId
+            })
+        });
+
+        if (response.ok) {
+            statusText.innerHTML = '✅ Resultados salvos e enviados com sucesso!';
+            statusText.style.color = 'var(--cyan)';
+        } else {
+            throw new Error('Erro no servidor');
+        }
+    } catch (error) {
+        console.error("Erro:", error);
+        statusText.innerHTML = '❌ Erro no envio automático. Por favor, clique em "COPIAR DADOS BRUTOS".';
+        statusText.style.color = 'var(--error)';
+    }
+}
+
+function copyToClipboard() {
+    const fields = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
+    const rows = state.trials.map(t => [
+        t.stage,
+        t.span,
+        `"${t.sequence.join(' ')}"`,
+        `"${t.userAnswer.join(' ')}"`,
+        t.isCorrect ? 'sim' : 'nao'
+    ]);
+    
+    let clipText = fields.join('\t') + '\n';
+    rows.forEach(row => { clipText += row.join('\t') + '\n'; });
+    
+    navigator.clipboard.writeText(clipText).then(() => {
+        alert("Resultados copiados! Cole (Ctrl+V) no Excel.");
+    }).catch(err => {
+        alert("Erro ao copiar.");
+    });
 }
 
 function playBeep(freq) {
