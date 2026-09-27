@@ -21,7 +21,7 @@ const DIRECT_SEQUENCES = [
     [3, 9, 8, 2, 4, 6, 7, 1], [7, 1, 5, 6, 3, 8, 2, 9, 4], [6, 2, 9, 4, 1, 7, 8, 5, 3]
 ];
 
-// De acordo com seu DOC, estes arrays já são a RESPOSTA CORRETA (o inverso da exibição)
+// Estes arrays já são a RESPOSTA CORRETA (o inverso da exibição)
 const INVERSE_SEQUENCES = [
     [5, 2], [9, 1], [7, 2, 3], [1, 4, 8], [8, 5, 2, 9], [4, 7, 3, 1],
     [6, 3, 8, 2, 7], [5, 1, 9, 4, 6], [1, 5, 8, 6, 2, 4], [9, 3, 7, 4, 8, 2],
