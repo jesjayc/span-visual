@@ -418,5 +418,40 @@ function playBeep(freq) {
     osc.frequency.value = freq; osc.start(); osc.stop(context.currentTime + 0.1);
 }
 
+// --- SISTEMA DE ABORTO DE SEGURANÇA (0001) ---
+const ABORT_CODE = "0001";
+let abortBuffer = "";
+let abortBufferTimer = null;
+
+function abortTest() {
+    // Não faz nada se já estiver nas telas fora do teste
+    if (state.stage === 'RESULTS' || state.stage === 'NAME_SCREEN' || state.stage === 'WELCOME') return;
+    
+    if (state.trials.length === 0) {
+        location.reload();
+        return;
+    }
+    
+    state.stage = 'RESULTS';
+    render();
+}
+
+window.addEventListener('keydown', (e) => {
+    // Ignora as teclas se o usuário estiver digitando o nome
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+    
+    // Ignora teclas especiais; aceita apenas letras e números
+    if (e.key.length !== 1 || !/[a-z0-9]/i.test(e.key)) return;
+    
+    abortBuffer = (abortBuffer + e.key.toLowerCase()).slice(-ABORT_CODE.length);
+    clearTimeout(abortBufferTimer);
+    abortBufferTimer = setTimeout(() => { abortBuffer = ""; }, 2000);
+    
+    if (abortBuffer === ABORT_CODE) {
+        abortBuffer = "";
+        abortTest();
+    }
+});
+
 function nextStage(s) { state.stage = s; render(); }
 render();
