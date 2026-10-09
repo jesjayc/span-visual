@@ -357,15 +357,18 @@ async function sendResultsByEmail() {
     statusText.textContent = '⏳ Enviando resultados para o servidor...';
     
     const fields = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
+    
+    // Sem aspas para o Excel ler o ponto-e-vírgula corretamente
     const rows = state.trials.map(t => [
         t.stage,
         t.span,
-        `"${t.sequence.join(' ')}"`,
-        `"${t.userAnswer.join(' ')}"`,
+        t.sequence.join(' '), 
+        t.userAnswer.join(' '),
         t.isCorrect ? 'sim' : 'nao'
-    ]);
+    ].join(';'));
+    
     const headerRow = fields.join(';');
-    const csvContent = [headerRow, ...rows.map(r => r.join(';'))].join('\n');
+    const csvContent = [headerRow, ...rows].join('\n'); // Uma rodada embaixo da outra
 
     try {
         const response = await fetch('/api/enviar', { 
@@ -392,16 +395,18 @@ async function sendResultsByEmail() {
 
 function copyToClipboard() {
     const fields = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
+    
+    // Sem aspas e usando tabulação
     const rows = state.trials.map(t => [
         t.stage,
         t.span,
-        `"${t.sequence.join(' ')}"`,
-        `"${t.userAnswer.join(' ')}"`,
+        t.sequence.join(' '),
+        t.userAnswer.join(' '),
         t.isCorrect ? 'sim' : 'nao'
-    ]);
+    ].join('\t'));
     
-    let clipText = fields.join('\t') + '\n';
-    rows.forEach(row => { clipText += row.join('\t') + '\n'; });
+    const headerRow = fields.join('\t');
+    const clipText = [headerRow, ...rows].join('\n'); // Uma rodada embaixo da outra
     
     navigator.clipboard.writeText(clipText).then(() => {
         alert("Resultados copiados! Cole (Ctrl+V) no Excel.");
