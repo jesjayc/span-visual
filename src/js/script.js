@@ -38,7 +38,6 @@ const container = document.getElementById('screen-container');
 function render() {
     container.innerHTML = '';
     if (state.stage === 'NAME_SCREEN') renderNameScreen();
-    else if (state.stage === 'WELCOME') renderWelcome();
     else if (state.stage === 'TRIAL_RAPPORT') renderTrialRapport(); 
     else if (state.stage === 'RAPPORT') renderRapport();
     else if (state.stage === 'TESTING') renderTesting();
@@ -71,7 +70,7 @@ function renderNameScreen() {
             return;
         }
         state.participantId = val;
-        nextStage('WELCOME');
+        nextStage('TRIAL_RAPPORT');
     };
     
     btn.onclick = submitName;
@@ -80,18 +79,10 @@ function renderNameScreen() {
     };
 }
 
-function renderWelcome() {
-    container.innerHTML = `
-        <h1 class="title">Span Visuoespacial</h1>
-        <p style="margin:20px 0; color: var(--text-dim); font-size: 1.1rem;">Avaliação neuropsicológica de memória operacional visuoespacial e atenção concentrada.</p>
-        <button onclick="nextStage('TRIAL_RAPPORT')">Iniciar Aplicativo</button>
-    `;
-}
-
 function renderTrialRapport() {
     if (!state.isInverse) {
         container.innerHTML = `
-            <h2 class="title">Treino - Span Visual (Etapa Direta)</h2>
+            <h2 class="title">Span Visual - Etapa Direta</h2>
             <div class="instructions-text">
                 <p>Nesse teste você verá 9 quadrados azuis dispostos na tela. Ao iniciar o teste, alguns quadrados irão piscar na cor amarela, um de cada vez, em uma ordem.</p>
                 <p>Assim que a sequência terminar, você deverá selecionar os blocos que piscaram, clicando neles usando o seu mouse, na mesma ordem em que eles piscaram.</p>
@@ -102,13 +93,13 @@ function renderTrialRapport() {
                     <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
                 </div>
             </div>
-            <button onclick="nextStage('TESTING')">Começar Treino Direto</button>
+            <button onclick="nextStage('TESTING')">ESTOU PRONTO (ESPAÇO)</button>
         `;
     } else {
         container.innerHTML = `
-            <h2 class="title">Treino - Span Visual (Etapa Inversa)</h2>
+            <h2 class="title">Span Visual - Etapa Inversa</h2>
             <div class="instructions-text">
-                <p>Nessa próxima etapa de treino você vai ver novas sequências nos quadrados piscando, assim como na parte anterior.</p>
+                <p>Nessa próxima etapa você vai ver novas sequências nos quadrados piscando, assim como na parte anterior.</p>
                 <p>No entanto, desta vez, sua tarefa será selecionar os quadrados na <strong>ordem inversa (de trás para frente)</strong> que eles piscaram.</p>
                 <p>Quando terminar de selecionar, clique no botão para seguir para a próxima sequência.</p>
                 <p>Se cometer um erro durante a seleção clique no botão "refazer" e tente novamente.</p>
@@ -117,7 +108,7 @@ function renderTrialRapport() {
                     <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
                 </div>
             </div>
-            <button onclick="nextStage('TESTING')">Começar Treino Inverso</button>
+            <button onclick="nextStage('TESTING')">ESTOU PRONTO (ESPAÇO)</button>
         `;
     }
 }
@@ -134,20 +125,20 @@ function renderRapport() {
                     <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
                 </div>
             </div>
-            <button onclick="nextStage('TESTING')">Começar Etapa Direta</button>
+            <button onclick="nextStage('TESTING')">ESTOU PRONTO (ESPAÇO)</button>
         `;
     } else {
         container.innerHTML = `
             <h2 class="title">Teste - Span Visual (Etapa Inversa)</h2>
             <div class="instructions-text">
-                <p>Muito bem! Agora que você compreendeu a mecânica de inversão, vamos para o teste oficial desta etapa.</p>
+                <p>Muito bem! Agora que você compreendeu a mecânica de inversão, vamos para o teste desta etapa.</p>
                 <p>Lembre-se da regra principal: selecione os quadrados na <strong>ordem inversa (de trás para frente)</strong> em que eles piscaram.</p>
                 <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border);">
                     <h3 style="color: var(--cyan); text-align: center; margin-bottom: 15px; font-size: 1.2rem;">⚠️ IMPORTANTE</h3>
                     <p style="text-align: center; margin: 0 auto; max-width: 480px;">A sequência será reproduzida <strong>uma única vez</strong>.<br>A sequência <strong>não pode ser vista novamente</strong>.<br>Preste <strong>muita</strong> atenção!</p>
                 </div>
             </div>
-            <button onclick="nextStage('TESTING')">Começar Etapa Inversa</button>
+            <button onclick="nextStage('TESTING')">ESTOU PRONTO (ESPAÇO)</button>
         `;
     }
 }
@@ -339,13 +330,8 @@ function checkSequence() {
 // --- TELA DE RESULTADOS COM ENVIO AUTOMÁTICO ---
 function renderResults() {
     container.innerHTML = `
-        <h1 class="title" style="font-size: 2.25rem;">Você finalizou o teste!</h1>
-        <p id="email-status-text" style="margin-bottom: 2.5rem; font-weight: 600; color: var(--text-dim); font-size: 1.1rem;">⏳ Processando resultados...</p>
-        
-        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px; margin: 0 auto;">
-            <button class="btn-secondary" onclick="copyToClipboard()" style="margin: 0; width: 100%;">COPIAR DADOS BRUTOS (BKP)</button>
-            <button class="btn-secondary" style="margin: 0; width: 100%; background: var(--border);" onclick="location.reload()">SAIR</button>
-        </div>
+        <h1 class="title" style="font-size: 2.25rem;">Teste finalizado.</h1>
+        <p id="email-status-text" style="font-weight: 600; color: var(--text-dim); font-size: 1.1rem;">⏳ Processando resultados...</p>
     `;
     
     sendResultsByEmail();
@@ -388,31 +374,9 @@ async function sendResultsByEmail() {
         }
     } catch (error) {
         console.error("Erro:", error);
-        statusText.innerHTML = '❌ Erro no envio automático. Por favor, clique em "COPIAR DADOS BRUTOS".';
+        statusText.innerHTML = '❌ Erro no envio automático. Por favor, avise o avaliador.';
         statusText.style.color = 'var(--error)';
     }
-}
-
-function copyToClipboard() {
-    const fields = ['etapa', 'span', 'sequencia_esperada', 'resposta_usuario', 'acertou'];
-    
-    // Sem aspas e usando tabulação
-    const rows = state.trials.map(t => [
-        t.stage,
-        t.span,
-        t.sequence.join(' '),
-        t.userAnswer.join(' '),
-        t.isCorrect ? 'sim' : 'nao'
-    ].join('\t'));
-    
-    const headerRow = fields.join('\t');
-    const clipText = [headerRow, ...rows].join('\n'); // Uma rodada embaixo da outra
-    
-    navigator.clipboard.writeText(clipText).then(() => {
-        alert("Resultados copiados! Cole (Ctrl+V) no Excel.");
-    }).catch(err => {
-        alert("Erro ao copiar.");
-    });
 }
 
 function playBeep(freq) {
@@ -430,7 +394,7 @@ let abortBufferTimer = null;
 
 function abortTest() {
     // Não faz nada se já estiver nas telas fora do teste
-    if (state.stage === 'RESULTS' || state.stage === 'NAME_SCREEN' || state.stage === 'WELCOME') return;
+    if (state.stage === 'RESULTS' || state.stage === 'NAME_SCREEN') return;
     
     if (state.trials.length === 0) {
         location.reload();
@@ -456,6 +420,15 @@ window.addEventListener('keydown', (e) => {
         abortBuffer = "";
         abortTest();
     }
+});
+
+// --- BARRA DE ESPAÇO NAS TELAS DE INSTRUÇÃO ---
+window.addEventListener('keydown', (e) => {
+    if (e.code !== 'Space' || e.repeat) return;
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+    if (state.stage !== 'TRIAL_RAPPORT' && state.stage !== 'RAPPORT') return;
+    e.preventDefault();
+    nextStage('TESTING');
 });
 
 function nextStage(s) { state.stage = s; render(); }
